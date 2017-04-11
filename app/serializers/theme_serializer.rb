@@ -24,7 +24,7 @@ end
 
 class RemoteThemeSerializer < ApplicationSerializer
   attributes :id, :remote_url, :remote_version, :local_version, :about_url,
-             :license_url, :commits_behind, :remote_updated_at
+             :license_url, :commits_behind, :remote_updated_at, :updated_at
 
   # wow, AMS has some pretty nutty logic where it tries to find the path here
   # from action dispatch, tell it not to

@@ -93,6 +93,16 @@ class Admin::ThemesController < Admin::AdminController
 
     set_fields
 
+    if params[:theme][:remote_check]
+      @theme.remote_theme.update_remote_version
+      @theme.remote_theme.save!
+    end
+
+    if params[:theme][:remote_update]
+      @theme.remote_theme.update_from_remote
+      @theme.remote_theme.save!
+    end
+
     respond_to do |format|
       if @theme.save
 

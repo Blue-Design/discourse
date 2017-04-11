@@ -69,6 +69,21 @@ export default Ember.Controller.extend({
   downloadUrl: url('model.id', '/admin/themes/%@'),
 
   actions: {
+
+    updateToLatest() {
+      this.set("updatingRemote", true);
+      this.get("model").updateToLatest().finally(()=>{
+        this.set("updatingRemote", false);
+      });
+    },
+
+    checkForThemeUpdates() {
+      this.set("updatingRemote", true);
+      this.get("model").checkForUpdates().finally(()=>{
+        this.set("updatingRemote", false);
+      });
+    },
+
     cancelChangeScheme() {
       this.set("colorSchemeId", this.get("model.color_scheme_id"));
     },
@@ -88,6 +103,20 @@ export default Ember.Controller.extend({
     finishedEditingName() {
       this.get("model").saveChanges("name");
       this.set("editingName", false);
+    },
+
+    editTheme() {
+      let edit = ()=>this.transitionToRoute('adminCustomizeThemes.edit', {model: this.get('model')});
+
+      if (this.get("model.remote_theme")) {
+      bootbox.confirm(I18n.t("admin.customize.theme.edit_confirm"), result => {
+        if (result) {
+          edit();
+        }
+      });
+      } else {
+        edit();
+      }
     },
 
     applyDefault() {

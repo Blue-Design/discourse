@@ -6,14 +6,19 @@ export default Ember.Route.extend({
   },
 
   serialize(wrapper) {
-    return {base_scheme_id: Ember.get(wrapper,'model.id'), target: "common", field_name: "scss"};
+    return {
+      model: wrapper.model,
+      target: wrapper.target || "common",
+      field_name: wrapper.field_name || "scss",
+      theme_id: wrapper.model.get("id")
+    };
   },
 
 
   setupController(controller, wrapper) {
     controller.set("model", wrapper.model);
-    controller.setTargetName(wrapper.target);
-    controller.set("fieldName", wrapper.field_name);
+    controller.setTargetName(wrapper.target || "common");
+    controller.set("fieldName", wrapper.field_name || "scss");
     this.controllerFor("adminCustomizeThemes").set("editingTheme", true);
   },
 

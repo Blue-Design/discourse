@@ -11,7 +11,7 @@ class GitImporter
   end
 
   def import!
-    Discourse::Utils.execute_command("git", "clone", "--depth", "1", @url, @temp_folder)
+    Discourse::Utils.execute_command("git", "clone", @url, @temp_folder)
   end
 
   def commits_since(hash)

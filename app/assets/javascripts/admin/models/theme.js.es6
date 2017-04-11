@@ -71,6 +71,16 @@ const Theme = RestModel.extend({
     }
   },
 
+  checkForUpdates() {
+    return this.save({remote_check: true})
+      .then(() => this.set("changed", false));
+  },
+
+  updateToLatest() {
+    return this.save({remote_update: true})
+      .then(() => this.set("changed", false));
+  },
+
   changed: false,
 
   saveChanges() {
