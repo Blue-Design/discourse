@@ -57,7 +57,7 @@ export default Ember.Controller.extend({
     ];
 
     if (parseInt(target) === 0) {
-      fields.push("embedded_scss")
+      fields.push("embedded_scss");
     }
 
     return fields.map(name=>{
