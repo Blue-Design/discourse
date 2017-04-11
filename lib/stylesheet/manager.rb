@@ -43,13 +43,16 @@ class Stylesheet::Manager
     end
   end
 
-  def self.compile(target = :desktop, opts={})
-    @lock.synchronize do
-      FileUtils.rm(MANIFEST_FULL_PATH, force: true) if opts[:force]
-      builder = self.new(target, @theme_id)
-      builder.compile(opts)
-      builder.stylesheet_filename
+  def self.precompile_css
+    themes = Theme.where('user_selectable OR key = ?', SiteSetting.default_theme_key).pluck(:key,:name)
+    themes << nil
+    themes.each do |key,name|
+      [:desktop, :mobile, :desktop_rtl, :mobile_rtl].each do |target|
+        STDERR.puts "precompile target: #{target} #{name}"
+        stylesheet_link_tag(target, nil, key)
+      end
     end
+    nil
   end
 
   def self.last_file_updated

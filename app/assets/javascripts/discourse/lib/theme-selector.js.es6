@@ -15,7 +15,7 @@ export function selectDefaultTheme(key) {
   if (key) {
     $.cookie('preview_style', key);
   } else {
-    $.removeCookie('preview_style');
+    $.cookie('preview_style', null);
   }
 }
 
@@ -42,6 +42,11 @@ export function previewTheme(key) {
 
 export function listThemes(site) {
   let themes = site.get('user_themes');
+
+  if (!themes) {
+    return null;
+  }
+
   let hasDefault = !!themes.findBy('default', true);
 
   let results = [];
