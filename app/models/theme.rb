@@ -228,6 +228,7 @@ class Theme < ActiveRecord::Base
   def add_child_theme!(theme)
     child_theme_relation.create!(child_theme_id: theme.id)
     @included_themes = nil
+    child_themes.reload
     save!
   end
 end

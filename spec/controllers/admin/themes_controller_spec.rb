@@ -76,7 +76,6 @@ describe Admin::ThemesController do
 
         child_theme = Theme.create(name: 'my name', user_id: -1)
 
-
         xhr :put, :update, id: theme.id,
             theme: {
           child_theme_ids: [child_theme.id],

@@ -20,17 +20,14 @@ describe Admin::StaffActionLogsController do
     it 'can generate diffs for theme changes' do
       theme = Theme.new(user_id: -1, name: 'bob')
       theme.set_field(:mobile, :scss, 'body {.up}')
-      theme.save!
+      theme.set_field(:common, :scss, 'omit-dupe')
+
+      original_json = ThemeSerializer.new(theme, root: false).to_json
+
+      theme.set_field(:mobile, :scss, 'body {.down}')
 
       record = StaffActionLogger.new(Discourse.system_user)
-        .log_theme_change(theme, theme_fields: [
-          {
-            name: 'scss',
-            target: 'mobile',
-            value: 'body {.down}'
-          }
-        ])
-
+        .log_theme_change(original_json, theme)
 
       xhr :get, :diff, id: record.id
       expect(response).to be_success
@@ -38,6 +35,8 @@ describe Admin::StaffActionLogsController do
       parsed = JSON.parse(response.body)
       expect(parsed["side_by_side"]).to include("up")
       expect(parsed["side_by_side"]).to include("down")
+
+      expect(parsed["side_by_side"]).not_to include("omit-dupe")
     end
   end
 end
