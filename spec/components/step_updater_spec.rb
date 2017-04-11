@@ -151,7 +151,7 @@ describe Wizard::StepUpdater do
       let!(:color_scheme) { Fabricate(:color_scheme, name: 'existing', via_wizard: true) }
 
       it "updates the scheme" do
-        updater = wizard.create_updater('colors', theme_id: 'dark')
+        updater = wizard.create_updater('colors', base_scheme_id: 'dark')
         updater.update
         expect(updater.success?).to eq(true)
         expect(wizard.completed_steps?('colors')).to eq(true)
@@ -165,7 +165,7 @@ describe Wizard::StepUpdater do
 
     context "without an existing scheme" do
       it "creates the scheme" do
-        updater = wizard.create_updater('colors', theme_id: 'dark')
+        updater = wizard.create_updater('colors', base_scheme_id: 'dark')
         updater.update
         expect(updater.success?).to eq(true)
         expect(wizard.completed_steps?('colors')).to eq(true)

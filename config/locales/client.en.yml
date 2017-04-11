@@ -2835,7 +2835,7 @@ en:
           add: "Add"
           commits_behind:
             one: "Theme is 1 commit behind!"
-            many: "Theme is {{count}} commit behind!"
+            other: "Theme is {{count}} commit behind!"
           scss:
             text: "CSS"
             title: "Enter custom CSS, we accept all valid CSS and SCSS styles"
