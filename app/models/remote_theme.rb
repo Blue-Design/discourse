@@ -14,9 +14,8 @@ class RemoteTheme < ActiveRecord::Base
     theme.remote_theme = remote_theme
 
     remote_theme.remote_url = importer.url
-    remote_theme.remote_version = importer.version
-    remote_theme.local_version = importer.version
     remote_theme.update_from_remote(importer)
+
     theme.save!
     theme
   ensure
@@ -49,7 +48,13 @@ class RemoteTheme < ActiveRecord::Base
       end
     end
 
+    theme_info = JSON.parse(importer["about.json"])
+    self.license_url ||= theme_info["license_url"]
+    self.about_url ||= theme_info["about_url"]
+
     self.remote_updated_at = Time.zone.now
+    self.remote_version = importer.version
+    self.local_version = importer.version
 
     self
   ensure

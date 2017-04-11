@@ -19,7 +19,9 @@ describe RemoteTheme do
     let :initial_repo do
       setup_git_repo(
         "about.json" => '{
-          "name": "awesome theme"
+          "name": "awesome theme",
+          "about_url": "https://www.site.com/about",
+          "license_url": "https://www.site.com/license"
         }',
         "desktop/desktop.scss" => "body {color: red;}",
         "common/header.html" => "I AM HEADER",
@@ -43,6 +45,9 @@ describe RemoteTheme do
       expect(remote.remote_url).to eq(initial_repo)
       expect(remote.remote_version).to eq(`cd #{initial_repo} && git rev-parse HEAD`.strip)
       expect(remote.local_version).to eq(`cd #{initial_repo} && git rev-parse HEAD`.strip)
+
+      expect(remote.about_url).to eq("https://www.site.com/about")
+      expect(remote.license_url).to eq("https://www.site.com/license")
 
       expect(@theme.theme_fields.length).to eq(2)
 

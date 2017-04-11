@@ -22,8 +22,14 @@ class ChildThemeSerializer < ApplicationSerializer
   end
 end
 
+class RemoteThemeSerializer < ApplicationSerializer
+  attributes :remote_url, :remote_version, :local_version, :about_url,
+             :license_url, :commits_behind, :remote_updated_at
+end
+
 class ThemeSerializer < ChildThemeSerializer
   attributes :color_scheme, :color_scheme_id, :user_selectable
   has_many :child_themes, serializer: ChildThemeSerializer, embed: :objects
   has_many :theme_fields, embed: :objects
+  has_one :remote_theme, embed: :objects
 end
