@@ -18,9 +18,9 @@ describe ColorSchemeRevisor do
       expect(color_scheme.reload.name).to eq("Changed Name")
     end
 
-    it "can update the theme_id" do
-      ColorSchemeRevisor.revise(color_scheme, valid_params.merge(theme_id: 'test'))
-      expect(color_scheme.reload.theme_id).to eq('test')
+    it "can update the base_scheme_id" do
+      ColorSchemeRevisor.revise(color_scheme, valid_params.merge(base_scheme_id: 'test'))
+      expect(color_scheme.reload.base_scheme_id).to eq('test')
     end
 
     it 'can change colors' do

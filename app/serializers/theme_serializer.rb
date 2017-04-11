@@ -23,13 +23,20 @@ class ChildThemeSerializer < ApplicationSerializer
 end
 
 class RemoteThemeSerializer < ApplicationSerializer
-  attributes :remote_url, :remote_version, :local_version, :about_url,
+  attributes :id, :remote_url, :remote_version, :local_version, :about_url,
              :license_url, :commits_behind, :remote_updated_at
+
+  # wow, AMS has some pretty nutty logic where it tries to find the path here
+  # from action dispatch, tell it not to
+  def about_url
+    object.about_url
+  end
 end
 
 class ThemeSerializer < ChildThemeSerializer
-  attributes :color_scheme, :color_scheme_id, :user_selectable
+  attributes :color_scheme, :color_scheme_id, :user_selectable, :remote_theme_id
+
+  has_many :theme_fields, serializer: ThemeFieldSerializer, embed: :objects
   has_many :child_themes, serializer: ChildThemeSerializer, embed: :objects
-  has_many :theme_fields, embed: :objects
-  has_one :remote_theme, embed: :objects
+  has_one :remote_theme, serializer: RemoteThemeSerializer, embed: :objects
 end

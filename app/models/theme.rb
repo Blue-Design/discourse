@@ -37,7 +37,7 @@ class Theme < ActiveRecord::Base
   after_destroy do
     remove_from_cache!
     if SiteSetting.default_theme_key == self.key
-      SiteSetting.clear_default
+      Theme.clear_default!
     end
   end
 

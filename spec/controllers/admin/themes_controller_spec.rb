@@ -16,8 +16,17 @@ describe Admin::ThemesController do
         theme = Theme.new(name: 'my name', user_id: -1)
         theme.set_field(:common, :scss, '.body{color: black;}')
         theme.set_field(:desktop, :after_header, '<b>test</b>')
+
+        theme.remote_theme = RemoteTheme.new(
+          remote_url: 'awesome.git',
+          remote_version: '7',
+          local_version: '8',
+          remote_updated_at: Time.zone.now
+        )
+
         theme.save!
 
+        # this will get serialized as well
         ColorScheme.create_from_base(name: "test", colors: [])
 
         xhr :get, :index
@@ -29,6 +38,7 @@ describe Admin::ThemesController do
         expect(json["extras"]["color_schemes"].length).to eq(2)
         theme_json = json["themes"].find{|t| t["id"] == theme.id}
         expect(theme_json["theme_fields"].length).to eq(2)
+        expect(theme_json["remote_theme"]["remote_version"]).to eq("7")
       end
     end
 
