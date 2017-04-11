@@ -160,6 +160,7 @@ Discourse::Application.routes.draw do
 
     scope "/logs" do
       resources :staff_action_logs,     only: [:index]
+      get 'staff_action_logs/:id/diff' => 'staff_action_logs#diff'
       resources :screened_emails,       only: [:index, :destroy]
       resources :screened_ip_addresses, only: [:index, :create, :update, :destroy] do
         collection do

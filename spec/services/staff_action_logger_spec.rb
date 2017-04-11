@@ -130,42 +130,36 @@ describe StaffActionLogger do
   end
 
   describe "log_theme_change" do
-    let(:valid_params) do
-      {
-        name: 'Cool Theme',
-        theme_fields: [
-          {
-            value: "body {\n  background-color: blue;\n}\n",
-            name: "scss",
-            target: "common"
-          }
-        ]
-      }
-    end
 
     it "raises an error when params are invalid" do
       expect { logger.log_theme_change(nil, nil) }.to raise_error(Discourse::InvalidParameters)
     end
 
+    let :theme do
+      Theme.new(name: 'bob', user_id: -1)
+    end
+
     it "logs new site customizations" do
-      log_record = logger.log_theme_change(nil, valid_params)
-      expect(log_record.subject).to eq(valid_params[:name])
+
+      log_record = logger.log_theme_change(nil, theme)
+      expect(log_record.subject).to eq(theme.name)
       expect(log_record.previous_value).to eq(nil)
       expect(log_record.new_value).to be_present
 
       json = ::JSON.parse(log_record.new_value)
-      expect(json['theme_fields'].first).to eq(valid_params[:theme_fields].first.stringify_keys)
+      expect(json['name']).to eq(theme.name)
     end
 
     it "logs updated site customizations" do
-      existing = Theme.new(name: 'Banana', user_id: 1)
-      existing.set_field(:common, :scss, "body{margin: 10px;}")
+      old_json = ThemeSerializer.new(theme, root:false).to_json
 
-      log_record = logger.log_theme_change(existing, valid_params)
+      theme.set_field(:common, :scss, "body{margin: 10px;}")
+
+      log_record = logger.log_theme_change(old_json, theme)
 
       expect(log_record.previous_value).to be_present
 
-      json = ::JSON.parse(log_record.previous_value)
+      json = ::JSON.parse(log_record.new_value)
       expect(json['theme_fields']).to eq([{"name" => "scss", "target" => "common", "value" => "body{margin: 10px;}"}])
     end
   end

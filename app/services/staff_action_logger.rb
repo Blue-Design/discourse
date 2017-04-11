@@ -114,21 +114,39 @@ class StaffActionLogger
   end
 
   def theme_json(theme)
-    json = ThemeSerializer.new(theme).to_json
-    # unroot it
-    ::JSON.parse(json)["theme"].to_json
+    ThemeSerializer.new(theme, root:false).to_json
   end
 
-  def log_theme_change(old_record, theme_params, opts={})
-    raise Discourse::InvalidParameters.new(:theme_params) unless theme_params
+  def strip_duplicates(old,cur)
+    return [old,cur] unless old && cur
 
-    old_json = theme_json(old_record) if old_record
+    old = JSON.parse(old)
+    cur = JSON.parse(cur)
+
+    old.each do |k, v|
+      next if k == "name"
+      next if k == "id"
+      if (v == cur[k])
+        cur.delete(k)
+        old.delete(k)
+      end
+    end
+
+    [old.to_json, cur.to_json]
+  end
+
+  def log_theme_change(old_json, new_theme, opts={})
+    raise Discourse::InvalidParameters.new(:new_theme) unless new_theme
+
+    new_json = theme_json(new_theme)
+
+    old_json,new_json = strip_duplicates(old_json,new_json)
 
     UserHistory.create( params(opts).merge({
       action: UserHistory.actions[:change_theme],
-      subject: theme_params[:name],
+      subject: new_theme.name,
       previous_value: old_json,
-      new_value: theme_params.to_json
+      new_value: new_json
     }))
   end
 

@@ -15,7 +15,7 @@ class Admin::ThemesController < Admin::AdminController
       end
 
       if @theme.save
-        log_theme_change(nil, theme)
+        log_theme_change(nil, @theme)
         render json: @theme, status: :created
       else
         render json: @theme.errors, status: :unprocessable_entity
@@ -57,7 +57,7 @@ class Admin::ThemesController < Admin::AdminController
     respond_to do |format|
       if @theme.save
         update_default_theme
-        log_theme_change(nil, theme_params)
+        log_theme_change(nil, @theme)
         format.json { render json: @theme, status: :created}
       else
         format.json { render json: @theme.errors, status: :unprocessable_entity }
@@ -67,6 +67,8 @@ class Admin::ThemesController < Admin::AdminController
 
   def update
     @theme = Theme.find(params[:id])
+
+    original_json = ThemeSerializer.new(@theme, root: false).to_json
 
     [:name, :color_scheme_id, :user_selectable].each do |field|
       if theme_params.key?(field)
@@ -108,7 +110,7 @@ class Admin::ThemesController < Admin::AdminController
 
         update_default_theme
 
-        log_theme_change(@theme, theme_params)
+        log_theme_change(original_json, @theme)
         format.json { render json: @theme, status: :created}
       else
         format.json { render json: @theme.errors, status: :unprocessable_entity }
@@ -183,8 +185,8 @@ class Admin::ThemesController < Admin::AdminController
       end
     end
 
-    def log_theme_change(old_record, new_params)
-      StaffActionLogger.new(current_user).log_theme_change(old_record, new_params)
+    def log_theme_change(old_record, new_record)
+      StaffActionLogger.new(current_user).log_theme_change(old_record, new_record)
     end
 
 end
